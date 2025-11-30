@@ -33,7 +33,6 @@
 - [Configuration](#-configuration)
 - [Development Guide](#-development-guide)
 - [Deployment](#-deployment)
-- [Contributing](#-contributing)
 - [License](#-license)
 
 ---
@@ -143,7 +142,11 @@
 - **State Management**: React Hooks (useState, useEffect, useMemo)
 - **Progressive Web App**: Service Worker for offline functionality
 
-### **Backend Services** (Firebase)
+### **Backend & Infrastructure**
+- **Hosting**: Google Cloud Run
+  - Serverless containerized deployment
+  - Auto-scaling and global CDN
+  - Automatic HTTPS and SSL certificates
 - **Authentication**: Firebase Authentication
   - Google Sign-In (OAuth)
   - Email/Password authentication
@@ -177,6 +180,11 @@ Family Hub follows a **client-centric architecture** with Firebase as the backen
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
+│              Google Cloud Run (Hosting)                      │
+│                   React Application                          │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+┌─────────────────────┴───────────────────────────────────────┐
 │                    Client Application                        │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐      │
 │  │   React UI   │  │  State Mgmt  │  │   Utils      │      │
@@ -879,32 +887,37 @@ const setTodos = (updater: React.SetStateAction<Todo[]>) => {
 
 ## 🚢 Deployment
 
-### **Firebase Hosting**
+### **Google Cloud Run**
 
-1. **Install Firebase CLI**:
-   ```bash
-   npm install -g firebase-tools
-   ```
+Family Hub is deployed on **Google Cloud Run**, providing serverless, scalable hosting with automatic HTTPS and global CDN.
 
-2. **Login to Firebase**:
-   ```bash
-   firebase login
-   ```
+**Live Application**: [https://family-hub-884439437269.us-west1.run.app/](https://family-hub-884439437269.us-west1.run.app/)
 
-3. **Initialize Firebase**:
-   ```bash
-   firebase init hosting
-   ```
+### **Deployment Architecture**
 
-4. **Build the app**:
-   ```bash
-   npm run build
-   ```
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Google Cloud Run                      │
+│              (Containerized React App)                   │
+│         https://family-hub-*.us-west1.run.app           │
+└─────────────────┬───────────────────────────────────────┘
+                  │
+        ┌─────────┴─────────┬─────────────┬──────────────┐
+        ▼                   ▼             ▼              ▼
+  ┌──────────┐      ┌──────────┐   ┌──────────┐  ┌──────────┐
+  │ Firebase │      │ Firebase │   │ Firebase │  │  Gemini  │
+  │Firestore │      │   Auth   │   │ Storage  │  │   AI     │
+  └──────────┘      └──────────┘   └──────────┘  └──────────┘
+```
 
-5. **Deploy**:
-   ```bash
-   firebase deploy --only hosting
-   ```
+### **Why Cloud Run?**
+
+- **Serverless**: No server management required
+- **Auto-scaling**: Scales from zero to handle any traffic
+- **Cost-effective**: Pay only for actual usage
+- **Global**: Fast delivery worldwide with automatic CDN
+- **HTTPS**: Automatic SSL certificates
+- **Container-based**: Consistent environments across dev and production
 
 ### **Environment-Specific Configurations**
 
@@ -914,26 +927,7 @@ For production deployments:
 - Set up Firebase Authentication domains
 - Enable Firebase Analytics
 - Configure service worker caching strategies
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these guidelines:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### **Development Standards**
-
-- Write TypeScript with strict type safety
-- Follow React best practices and hooks patterns
-- Maintain component modularity
-- Write clear comments for complex logic
-- Test thoroughly on desktop, tablet, and mobile
+- Set up Cloud Run environment variables for API keys
 
 ---
 
